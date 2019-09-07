@@ -32,16 +32,19 @@ def dict_type_enc(dict, type):
     return one_hot_enc(i, len(dict), zero_entry)
 
 
-def load_data(file):
+def load_data(filename):
     """Load procedure data.
 
     """
-    if file.endswith('.xlsx'):
-        df = pd.read_excel(file)
-    elif file.endswith('.csv'):
-        df = pd.read_csv(file)
+    if filename.endswith('.xlsx'):
+        df = pd.read_excel(filename)
+    elif filename.endswith('.csv'):
+        df = pd.read_csv(filename)
     else:
-        raise TypeError('Invalid file' + file)
+        raise TypeError('Invalid filename' + filename)
+
+    # filter procedures that aren't completed
+    df = df[df["PROCEDURE_END"].notnull()]
 
     features = []
     waiting_times = []
@@ -73,14 +76,14 @@ def load_data(file):
         priority_code = np.array([priority_code])
         pat_condition = dict_type_enc(pat_conditions, get('pat_condition'))
         current_date = pd.datetime.now()
-        pat_age = (current_date.year - get('pat_birth_date').year) / 100  # TODO: calc age properly
+        pat_age = (current_date - get('pat_birth_date')) / np.timedelta64(1, 'Y') / 100
         pat_age = np.array([pat_age])
         pat_sex = dict_type_enc(pat_sexes, get('pat_sex'))
         pat_insurance = dict_type_enc(pat_insurances, get('pat_insurance'))
 
         # Concat to feature vector
         x = np.concatenate((machine_type, body_part, admission_type, priority_code,
-                        pat_condition, pat_age, pat_sex, pat_insurance))
+                            pat_condition, pat_age, pat_sex, pat_insurance))
 
         features.append(x)
         waiting_times.append(wait)
@@ -88,3 +91,16 @@ def load_data(file):
         punctuality_times.append(punctuality)
 
     return features, waiting_times, procedure_times, punctuality_times
+
+
+def load_schedule(filename):
+    if filename.endswith('.xlsx'):
+        df = pd.read_excel(filename)
+    elif filename.endswith('.csv'):
+        df = pd.read_csv(filename)
+    else:
+        raise TypeError('Invalid filename' + filename)
+
+    df = df[df["APPOINTMENT_DATE"].notnull()]
+
+    return df[["APPOINTMENT_DATE", "PATIENT_KEY", "MED_LOCATION_KEY"]].sort_values("APPOINTMENT_DATE")
