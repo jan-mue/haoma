@@ -7,9 +7,10 @@ from data_categories import *
 def one_hot_enc(index, number, zero_entry=False):
     if zero_entry:
         number -= 1
+        index -= 1
 
     x = np.zeros(number)
-    if not (zero_entry and index == 0):
+    if not (zero_entry and index < 0):
         x[index] = 1
     return x
 
