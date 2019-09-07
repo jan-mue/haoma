@@ -52,9 +52,6 @@ def load_data(file):
         def get(key):
             return row[key.upper()]
 
-        def get(key):
-            return self.wait_times[key.upper()][idx]
-
         procedure = get('procedure_code')
         # convert special code for breast screening with mammogram
         procedure = 'GBREA' if procedure == 'BS' else procedure
@@ -64,11 +61,11 @@ def load_data(file):
         body_part = dict_type_enc(body_parts, body_code)
 
         punctuality = get('appointment_date') - get('registration_arrival')
-        punctuality = np.array([punctuality.seconds])
+        punctuality = punctuality.seconds
         wait = get('procedure_start') - get('registration_arrival')
-        wait = np.array([wait.seconds])
+        wait = wait.seconds
         procedure_time = get('procedure_start') - get('registration_arrival')
-        procedure_time = np.array([procedure_time.seconds])
+        procedure_time = procedure_time.seconds
 
         admission_type = dict_type_enc(admission_types, get('admission_type'))
         priority_code = get('priority_code') / 10
@@ -81,7 +78,6 @@ def load_data(file):
         pat_insurance = dict_type_enc(pat_insurances, get('pat_insurance'))
 
         # Concat to feature vector
-        # spare = np.zeros(500)
         x = np.concatenate((machine_type, body_part, admission_type, priority_code,
                         pat_condition, pat_age, pat_sex, pat_insurance))
 
