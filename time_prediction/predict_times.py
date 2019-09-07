@@ -1,17 +1,13 @@
 import tensorflow as tf
-import pandas as pd
 
 from tensorflow.keras.layers import Dense, Flatten, Conv2D
 from tensorflow.keras import Model
 
-df = pd.read_excel("Sample_Dataset.xlsx")
-df = df[df["PROCEDURE_START"].notnull()]
+from patient_data import load_data
 
-waiting_time = (df["PROCEDURE_START"] - df["REGISTRATION_ARRIVAL"]).astype('timedelta64[m]')
-df["PROCEDURE_CODE"] = df["PROCEDURE_CODE"].astype("category").cat.codes
-features = df[["PROCEDURE_CODE", "PRIORITY_CODE"]]
+features, waiting_times, procedure_times, punctuality_times = load_data("Sample_Dataset.xlsx")
 
-train_ds = tf.data.Dataset.from_tensor_slices((features.values, waiting_time.values)).shuffle(100).batch(4)
+train_ds = tf.data.Dataset.from_tensor_slices((features, waiting_times)).shuffle(100).batch(4)
 
 
 class WaitingTimeModel(Model):

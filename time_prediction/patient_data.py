@@ -1,14 +1,8 @@
-import torch
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-from torch.utils.data import Dataset, DataLoader
 
-# Ignore warnings
-import warnings
-warnings.filterwarnings("ignore")
+from data_categories import *
 
-plt.ion()
 
 def one_hot_enc(index, number, zero_entry=False):
     if zero_entry:
@@ -19,6 +13,7 @@ def one_hot_enc(index, number, zero_entry=False):
         x[index] = 1
     return x
 
+
 def time_enc(stamp):
     # TODO: encode neighborhood between months 1,2 and 12,1...
     month = one_hot_enc(stamp.month - 1, 12)
@@ -26,6 +21,7 @@ def time_enc(stamp):
     hour = one_hot_enc(stamp.hour - 1, 24)
     minute = one_hot_enc(stamp.minute - 1, 60)
     return month, day, hour, minute
+
 
 def dict_type_enc(dict, type):
     # All dicts should contain lower case keys
@@ -35,72 +31,59 @@ def dict_type_enc(dict, type):
     return one_hot_enc(i, len(dict), zero_entry)
 
 
-class PatientData(Dataset):
-    """Face Landmarks dataset."""
+def load_data(file):
+    """Load procedure data.
 
-    def __init__(self, file):
-        """
-        Args:
-            csv_file (string): Path to the csv file with annotations.
-            root_dir (string): Directory with all the images.
-            transform (callable, optional): Optional transform to be applied
-                on a sample.
-        """
-        if file.endswith('.xlsx'):
-            self.wait_times = pd.read_excel(file)
-        elif file.endswith('.csv'):
-            self.wait_times = pd.read_csv(file)
-        else:
-            raise TypeError('Invalid file' + file)
+    """
+    if file.endswith('.xlsx'):
+        df = pd.read_excel(file)
+    elif file.endswith('.csv'):
+        df = pd.read_csv(file)
+    else:
+        raise TypeError('Invalid file' + file)
 
-    def __len__(self):
-        return len(self.wait_times)
+    features = []
+    waiting_times = []
+    procedure_times = []
+    punctuality_times = []
 
-    def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
-        else:
-            idx = [idx]
+    for idx, row in df.iterrows():
 
-        for i in idx:
-            def get(key):
-                return self.wait_times[key.upper()][i]
+        def get(key):
+            return row[key.upper()]
 
-            procedure = get('procedure_code')
-            # convert special code for breast screening with mammogram
-            procedure = 'GBREA' if procedure == 'BS' else procedure
+        procedure = get('procedure_code')
+        # convert special code for breast screening with mammogram
+        procedure = 'GBREA' if procedure == 'BS' else procedure
 
-            machine_code, body_code = procedure[0], procedure[1:]
-            machine_type = dict_type_enc(machine_types, machine_code)
-            body_part = dict_type_enc(body_parts, body_code)
+        machine_code, body_code = procedure[0], procedure[1:]
+        machine_type = dict_type_enc(machine_types, machine_code)
+        body_part = dict_type_enc(body_parts, body_code)
 
-            punctuality = get('appointment_date') - get('registration_arrival')
-            punctuality = punctuality.seconds
+        punctuality = get('appointment_date') - get('registration_arrival')
+        punctuality = punctuality.seconds
 
-            wait = get('procedure_start') - get('registration_arrival')
-            wait = wait.seconds
+        wait = get('procedure_start') - get('registration_arrival')
+        wait = wait.seconds
 
-            procedure_time = get('procedure_start') - get('registration_arrival')
-            procedure_time = procedure_time.seconds
+        procedure_time = get('procedure_start') - get('registration_arrival')
+        procedure_time = procedure_time.seconds
 
-            admission_type = dict_type_enc(admission_types, get('admission_type'))
-            priority_code = get('priority_code') / 10
-            pat_condition = dict_type_enc(pat_conditions, get('pat_condition'))
-            pat_age = get('pat_birth_date').seconds
-            pat_sex = dict_type_enc(pat_sexes, get('pat_sex'))
-            pat_insurance = dict_type_enc(pat_insurances, 'pat_insurance')
+        admission_type = dict_type_enc(admission_types, get('admission_type'))
+        priority_code = get('priority_code') / 10
+        pat_condition = dict_type_enc(pat_conditions, get('pat_condition'))
+        pat_age = get('pat_birth_date').seconds
+        pat_sex = dict_type_enc(pat_sexes, get('pat_sex'))
+        pat_insurance = dict_type_enc(pat_insurances, 'pat_insurance')
 
-            # Concat to feature vector
-            # spare = np.zeros(500)
-            features = np.concatenate((machine_type, body_part, admission_type, priority_code,
-                            pat_condition, pat_age, pat_sex, pat_insurance))
+        # Concat to feature vector
+        # spare = np.zeros(500)
+        x = np.concatenate((machine_type, body_part, admission_type, priority_code,
+                        pat_condition, pat_age, pat_sex, pat_insurance))
 
-            sample = {'features', features, 'wait_time', wait, 'punctuality', punctuality, 'procedure_time', procedure_time}
+        features.append(x)
+        waiting_times.append(wait)
+        procedure_times.append(procedure_time)
+        punctuality_times.append(punctuality)
 
-        # TODO: Concat vectors
-        samples = {'features', 'wait_time', 'punctuality', 'procedure_time'}
-
-        return samples
-
-pat_data = PatientData('Sample_Dataset.xlsx')
-pat_data.__getitem__(0)
+    return features, waiting_times, procedure_times, punctuality_times
