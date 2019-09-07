@@ -52,6 +52,9 @@ def load_data(file):
         def get(key):
             return row[key.upper()]
 
+        def get(key):
+            return self.wait_times[key.upper()][idx]
+
         procedure = get('procedure_code')
         # convert special code for breast screening with mammogram
         procedure = 'GBREA' if procedure == 'BS' else procedure
@@ -61,20 +64,21 @@ def load_data(file):
         body_part = dict_type_enc(body_parts, body_code)
 
         punctuality = get('appointment_date') - get('registration_arrival')
-        punctuality = punctuality.seconds
-
+        punctuality = np.array([punctuality.seconds])
         wait = get('procedure_start') - get('registration_arrival')
-        wait = wait.seconds
-
+        wait = np.array([wait.seconds])
         procedure_time = get('procedure_start') - get('registration_arrival')
-        procedure_time = procedure_time.seconds
+        procedure_time = np.array([procedure_time.seconds])
 
         admission_type = dict_type_enc(admission_types, get('admission_type'))
         priority_code = get('priority_code') / 10
+        priority_code = np.array([priority_code])
         pat_condition = dict_type_enc(pat_conditions, get('pat_condition'))
-        pat_age = get('pat_birth_date').seconds
+        current_date = pd.datetime.now()
+        pat_age = (current_date.year - get('pat_birth_date').year) / 100  # TODO: calc age properly
+        pat_age = np.array([pat_age])
         pat_sex = dict_type_enc(pat_sexes, get('pat_sex'))
-        pat_insurance = dict_type_enc(pat_insurances, 'pat_insurance')
+        pat_insurance = dict_type_enc(pat_insurances, get('pat_insurance'))
 
         # Concat to feature vector
         # spare = np.zeros(500)
