@@ -7,7 +7,7 @@ from patient_data import load_data
 
 features, waiting_times, procedure_times, punctuality_times = load_data("Sample_Dataset.xlsx")
 
-train_ds = tf.data.Dataset.from_tensor_slices((features, waiting_times)).shuffle(100).batch(4)
+train_ds = tf.data.Dataset.from_tensor_slices((features, procedure_times)).shuffle(100).batch(4)
 
 
 class WaitingTimeModel(Model):
@@ -29,7 +29,6 @@ loss_object = tf.keras.losses.MeanSquaredError()
 optimizer = tf.keras.optimizers.Adam()
 
 train_loss = tf.keras.metrics.Mean(name='train_loss')
-train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
 
 
 @tf.function
@@ -41,7 +40,6 @@ def train_step(features, values):
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
     train_loss(loss)
-    train_accuracy(values, predictions)
 
 
 EPOCHS = 5
@@ -50,11 +48,8 @@ for epoch in range(EPOCHS):
     for features, values in train_ds:
         train_step(features, tf.reshape(values, [-1, 1]))
 
-    template = 'Epoch {}, Loss: {}, Accuracy: {}'
-    print(template.format(epoch + 1,
-                          train_loss.result(),
-                          train_accuracy.result() * 100))
+    template = 'Epoch {}, Loss: {}'
+    print(template.format(epoch + 1, train_loss.result()))
 
     # Reset the metrics for the next epoch
     train_loss.reset_states()
-    train_accuracy.reset_states()
