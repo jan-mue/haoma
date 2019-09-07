@@ -1,7 +1,5 @@
-import os
 import torch
 import pandas as pd
-from skimage import io, transform
 import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
@@ -35,46 +33,6 @@ def dict_type_enc(dict, type):
     i = list(dict).index(type)
     zero_entry = len(dict) == 2 or list(dict.keys())[0]== 'unknown'
     return one_hot_enc(i, len(dict), zero_entry)
-
-machine_types = {
-    'x': 'xr',
-    'c': 'ct',
-    'm': 'mri',
-    'u': 'us',
-    'g': 'mammogram'
-}
-
-body_parts = {
-    'ches': 'chest',
-    'abdo': 'abdomen',
-    'skuh': 'head',
-    'knel': 'knee left',
-    'kner': 'knee right',
-    'brea': 'breast'
-}
-
-admission_types = {
-    'outpatient': 0,
-    'inpatient': 1,
-}
-
-pat_conditions = {
-    'unknown': 0,
-    'walk': 1,
-    'wheelchair': 2,
-    'bed': 3,
-}
-
-
-pat_sexes = {
-    'f': 0,
-    'm': 1,
-}
-
-pat_insurances = {
-    'public': 0,
-    'private': 1,
-}
 
 
 class PatientData(Dataset):
