@@ -40,6 +40,9 @@ def load_data(filename):
         df = pd.read_excel(filename)
     elif filename.endswith('.csv'):
         df = pd.read_csv(filename)
+        date_fields = ["APPOINTMENT_DATE", "REGISTRATION_ARRIVAL", "PROCEDURE_START", "PROCEDURE_END", "PAT_BIRTH_DATE"]
+        for field in date_fields:
+            df[field] = pd.to_datetime(df[field])
     else:
         raise TypeError('Invalid filename' + filename)
 

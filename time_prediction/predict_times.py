@@ -5,9 +5,9 @@ from tensorflow.keras import Model
 
 from patient_data import load_data
 
-features, waiting_times, procedure_times, punctuality_times = load_data("Sample_Dataset.xlsx")
+features, waiting_times, procedure_times, punctuality_times = load_data("data.csv")
 
-train_ds = tf.data.Dataset.from_tensor_slices((features, procedure_times)).shuffle(100).batch(4)
+train_ds = tf.data.Dataset.from_tensor_slices((features, procedure_times)).shuffle(1000).batch(128)
 
 
 class WaitingTimeModel(Model):
