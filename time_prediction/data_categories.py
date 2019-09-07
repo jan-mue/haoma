@@ -1,9 +1,10 @@
+# type: name, med_locations
 machine_types = {
-    'x': 'xr',
-    'c': 'ct',
-    'm': 'mri',
-    'u': 'us',
-    'g': 'mammogram'
+    'x': ('xr', ['xr1','xr2']),
+    'c': ('ct', ['ct1','ct2','ct3','ct4']),
+    'm': ('mri', ['mri1', 'mri2']),
+    'u': ('us', ['us1', 'us2', 'us3', 'us4', 'us5', 'us6']),
+    'g': ('mammogram', ['mg1', 'mg2']),
 }
 
 body_parts = {
@@ -17,52 +18,50 @@ body_parts = {
     'armr': 'arm right',
 }
 
+# procedure type: name, priority avg, priority dev
 procedure_types = {
-    'bs': 'Breast Screening',
-    'xches': 'XR Chest',
-    'xabdo': 'XR Abdomen',
-    'uabdo': 'US Abdomen',
-    'xknel': 'XR Knee Lt',
-    'xkner': 'XR Knee Rt',
-    'xarml': 'XR arm Lt',
-    'xarmr': 'XR arm Rt',
-    'mskuh': 'MRI Head',
-    'cskuh': 'CT Head',
+    'bs': ('Breast Screening', 2, 1),
+    'xches': ('XR Chest', 3, 3),
+    'xabdo': ('XR Abdomen', 4, 4),
+    'uabdo': ('US Abdomen', 6, 3),
+    'xknel': ('XR Knee Lt', 2, 1),
+    'xkner': ('XR Knee Rt', 2, 1),
+    'xarml': ('XR arm Lt', 3, 1),
+    'xarmr': ('XR arm Rt', 3, 1),
+    'mskuh': ('MRI Head', 5, 3),
+    'cskuh': ('CT Head', 4, 3),
 }
 
-priority_codes = {
-    'bs': 2,
-    'xches': 3,
-    'xabdo': 3,
-    'uabdo': 5,
-    'xknel': 2,
-    'xkner': 2,
-    'xarml': 3,
-    'xarmr': 3,
-    'mskuh': 5,
-    'cskuh': 3,
-}
-
-
+# admission type: likelihood
 admission_types = {
-    'outpatient': 0,
+    'outpatient': 3,
     'inpatient': 1,
 }
 
+pat_claustrophobias = {
+    'unknown': 0.95,
+    'yes': 0.05
+}
+
 pat_conditions = {
-    'unknown': 0,
-    'walk': 1,
-    'wheelchair': 2,
-    'bed': 3,
+    'unknown': 0.2,
+    'walk': 0.6,
+    'wheelchair': 0.1,
+    'bed': 0.1,
 }
 
 
 pat_sexes = {
-    'f': 0,
-    'm': 1,
+    'f': 0.5,
+    'm': 0.5,
 }
 
 pat_insurances = {
-    'public': 0,
-    'private': 1,
+    'public': 0.9,
+    'private': 0.1,
+}
+
+pat_infection = {
+    'unknown': 0.95,
+    'yes': 0.05,
 }
