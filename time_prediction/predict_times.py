@@ -5,11 +5,11 @@ from tensorflow.keras import layers
 
 from patient_data import load_data
 
-features, waiting_times, procedure_times, punctuality_times = load_data("Sample_Dataset.xlsx")
+features, waiting_times, procedure_times, punctuality_times = load_data("data_dependent.csv")
+features_test, waiting_times_test, procedure_times_test, punctuality_times_test = load_data("Sample_Dataset.xlsx")
 
-ds = tf.data.Dataset.from_tensor_slices((features, waiting_times))
-train_ds = ds.take(8).shuffle(10).batch(4)
-test_ds = ds.skip(8).batch(2)
+train_ds = tf.data.Dataset.from_tensor_slices((features, procedure_times)).shuffle(1000).batch(32)
+test_ds = tf.data.Dataset.from_tensor_slices((features_test, procedure_times_test)).batch(32)
 
 model = tf.keras.models.Sequential([
     layers.BatchNormalization(input_shape=features[0].shape),

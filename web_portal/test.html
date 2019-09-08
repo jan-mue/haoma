@@ -10,8 +10,9 @@
 <body>
 
  <form name="myForm" action="/action_page.php" method="post">
+     Machine: <input type="text" name="machine" value="Xray"><br>
      Priority: <input type="text" name="priority" value="8"><br>
-     Condition of Patient: <input type="text" name="condition" value="wheelchair"><br>
+     Condition of Patient: <input type="text" name="condition" value="Wheelchair"><br>
      Age: <input type="text" name="age" value="32"><br>
      Insurance: <input type="text" name="insurance" value="PUBLIC"><br>
      <input type="submit" value="Submit">
@@ -46,13 +47,21 @@
             'private': 0.1,
         };
 
+        const machines_lut = {
+            'xray': [1.0, 0.0, 0.0, 0.0, 0.0],
+            'ct': [0.0, 1.0, 0.0, 0.0, 0.0],
+            'mri': [0.0, 0.0, 1.0, 0.0, 0.0],
+            'us': [0.0, 0.0, 0.0, 1.0, 0.0],
+            'mammogram': [0.0, 0.0, 0.0, 0.0, 1.0],
+        };
+
 
         var priority = parseFloat(values['priority']) / 10.0;
-        var condition = condition_lut[values['condition']];
+        var condition = condition_lut[values['condition'].toLowerCase()];
         var age = parseFloat(values['age']) / 100.0;
         var insurance = insurance_lut[values['insurance'].toLowerCase()];
 
-        var machine_type = [1, 0, 0, 0, 0];
+        var machine_type = machines_lut[values['machine'].toLowerCase()];
         var body_part = [0, 1, 0, 0, 0, 0, 0, 0];
         var admission_type = [1];
         var pat_sex = [1];
