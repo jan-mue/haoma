@@ -1,0 +1,29 @@
+﻿.container-fluid {
+    padding: 0px;
+}
+
+body {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#motionPatientFlow {
+    width: 100%;
+    height: 36%;
+    font-size: 18px;
+}
+
+#bookApointment {
+    width: 100%;
+    height: 37%;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+#logoMainPage {
+    width: 100%;
+}
+
+#elementaryRow {
+    padding-top: 15px;
+}
