@@ -4,14 +4,22 @@ from tensorflow.keras import layers
 
 from patient_data import load_data
 
-features, waiting_times, procedure_times, punctuality_times = load_data("data.csv")
+features, waiting_times, procedure_times, punctuality_times = load_data("Sample_Dataset.xlsx")
 
 ds = tf.data.Dataset.from_tensor_slices((features, waiting_times))
-train_ds = ds.take(80_000).shuffle(1000).batch(16)
-test_ds = ds.skip(80_000).batch(16)
+train_ds = ds.take(8).shuffle(10).batch(4)
+test_ds = ds.skip(8).batch(2)
 
 model = tf.keras.models.Sequential([
-    layers.Dense(12, activation="relu"),
+    layers.BatchNormalization(),
+    layers.Dense(64, activation="relu"),
+    layers.Dropout(0.2),
+    layers.Dense(128, activation="relu"),
+    layers.Dropout(0.2),
+    layers.Dense(256, activation="relu"),
+    layers.Dropout(0.2),
+    layers.Dense(512, activation="relu"),
+    layers.BatchNormalization(),
     layers.Dense(1, activation="relu")
   ])
 
@@ -41,14 +49,14 @@ def test_step(images, labels):
   test_loss(t_loss)
 
 
-EPOCHS = 8
+EPOCHS = 200
 
 for epoch in range(EPOCHS):
     for features, values in train_ds:
         train_step(features, tf.reshape(values, [-1, 1]))
 
-    for test_images, test_labels in test_ds:
-        test_step(test_images, test_labels)
+    for test_features, test_values in test_ds:
+        test_step(test_features, test_values)
 
     template = 'Epoch {}, Loss: {}, Test Loss: {}'
     print(template.format(epoch + 1,
@@ -58,6 +66,8 @@ for epoch in range(EPOCHS):
     # Reset the metrics for the next epoch
     train_loss.reset_states()
     test_loss.reset_states()
+
+print(model(features))
 
 model.summary()
 model.save('ge_waiting_time_model.h5')

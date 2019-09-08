@@ -68,11 +68,11 @@ def load_data(filename):
         body_part = dict_type_enc(body_parts, body_code)
 
         punctuality = get('appointment_date') - get('registration_arrival')
-        punctuality = punctuality.seconds / 60
+        punctuality = punctuality.seconds
         wait = get('procedure_start') - get('registration_arrival')
-        wait = wait.seconds / 60
+        wait = wait.seconds
         procedure_time = get('procedure_start') - get('registration_arrival')
-        procedure_time = procedure_time.seconds / 60
+        procedure_time = procedure_time.seconds
 
         admission_type = dict_type_enc(admission_types, get('admission_type'))
         priority_code = get('priority_code') / 10

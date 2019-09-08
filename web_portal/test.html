@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Haoma Tensorflow.js Test</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
+</head>
+<body>
+
+ <form name="myForm" action="/action_page.php" method="post">
+     Priority: <input type="text" name="priority"><br>
+     Condition: <input type="text" name="condition"><br>
+     Age: <input type="text" name="age"><br>
+     Insurance: <input type="text" name="insurance"><br>
+     <input type="submit" value="Submit">
+</form>
+
+<script>
+    $('form').on('keyup change paste', 'input, select, textarea', function(){
+        var values = {};
+        $.each($('form').serializeArray(), function(i, field) {
+            values[field.name] = field.value;
+        });
+        console.log(values);
+
+        const admission_types = {
+            'outpatient': 3,
+            'inpatient': 1,
+        };
+
+        const pat_conditions = {
+            'unknown': 0.2,
+            'walk': 0.6,
+            'wheelchair': 0.1,
+            'bed': 0.1,
+        };
+
+        const pat_insurances = {
+            'public': 0.9,
+            'private': 0.1,
+        };
+
+
+        var priority_code = values['priority'];
+        var pat_condition = values['condition'];
+        var pat_age = Number(values['age']);
+        var pat_insurance = values['insurance'];
+
+        const model = tf.loadLayersModel('procedure_model/model.json');
+        const prediction = model.predict(tf.tensor([[priority_code, pat_condition, pat_age, pat_insurance]]));
+
+        console.log(prediction);
+    });
+</script>
+
+</body>
+</html>

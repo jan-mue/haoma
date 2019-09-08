@@ -6,9 +6,9 @@ from dateutil.relativedelta import relativedelta
 
 from data_categories import *
 
-n_patients = 7_000
-n_cases = 8_000
-n_procedures = 10_000
+n_patients = 70_000
+n_cases = 80_000
+n_procedures = 100_000
 has_dependencies = True
 
 # patient data
