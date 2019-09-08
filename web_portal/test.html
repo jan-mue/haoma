@@ -18,6 +18,12 @@
 </form>
 
 <script>
+    function flatten(arr) {
+        return arr.reduce(function (flat, toFlatten) {
+            return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+        }, []);
+    }
+
     $('form').on('keyup change paste', 'input, select, textarea', function(){
         var values = {};
         $.each($('form').serializeArray(), function(i, field) {
@@ -25,28 +31,26 @@
         });
         console.log(values);
 
-        const admission_types = {
-            'outpatient': 3,
-            'inpatient': 1,
+        const condition_lut = {
+            'unknown': [0.0, 0.0, 0.0],
+            'walk': [0.0, 0.0, 1.0],
+            'wheelchair': [0.0, 1.0, 0.0],
+            'bed': [1.0, 0.0, 0.0],
         };
 
-        const pat_conditions = {
-            'unknown': 0.2,
-            'walk': 0.6,
-            'wheelchair': 0.1,
-            'bed': 0.1,
-        };
-
-        const pat_insurances = {
+        const insurance_lut = {
             'public': 0.9,
             'private': 0.1,
         };
 
 
-        var priority_code = values['priority'];
-        var pat_condition = values['condition'];
-        var pat_age = Number(values['age']);
-        var pat_insurance = values['insurance'];
+        var priority = parseFloat(values['priority']) / 10.0;
+        var condition = condition_lut[values['condition']];
+        var age = parseFloat(values['age']) / 100.0;
+        var insurance = insurance_lut[values['insurance']];
+
+        var prediction_input = [flatten([priority, condition, age, insurance])];
+        console.log(prediction_input);
 
         const model = tf.loadLayersModel('procedure_model/model.json');
         const prediction = model.predict(tf.tensor([[priority_code, pat_condition, pat_age, pat_insurance]]));
