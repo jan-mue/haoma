@@ -1,0 +1,154 @@
+﻿
+@{
+    ViewBag.Title = "BookingAppointment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model Techfest.Models.BookingAppointmentModel
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor</title>
+    <link rel="stylesheet" href="~/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="~/Content/Appointment.css">
+
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+    <script src="~/Scripts/jquery-1.11.1.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6"><h3>Book an appointment</h3></div>
+            <div class="col-md-6"><img id="appointmentLogo" src="~/Resources/logo.png" /></div>
+        </div>
+      
+        <form id="formAppointment" class="well form-horizontal">
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Search patient by id</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span><input id="patientID" name="patientID" placeholder="Enter patient ID" class="form-control" value="" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Patient key</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><input id="patientKey" name="patientKey" placeholder="Patient key" class="form-control" value="@Model.Patient_key" type="text"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Sex</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><input id="sex" name="sex" placeholder="Sex" class="form-control" value="@Model.Sex" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Birth date</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><input id="birthDate" name="birthDate" placeholder="Date of birth" class="form-control" value="@Model.Birth_date" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Height</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span><input id="height" name="height" placeholder="Height of patient" class="form-control" value="@Model.Height" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Procedure start</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-phone"></i></span><input id="procedureStart" name="procedureStart" placeholder="Time of procedure starting" class="form-control" value="@Model.Procedure_start" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Procedure code</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-heart"></i></span><input id="procedureCode" name="procedureCode" placeholder="Procedure code" class="form-control" value="@Model.Procedure_code" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Radiology ID</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span><input id="radiologyID" name="radiologyID" placeholder="Radiology ID" class="form-control" value="@Model.Radiologist_id" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Weight</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-hand-right"></i></span><input id="weight" name="weight" placeholder="Weight of patient" class="form-control" value="@Model.Weight" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Registration date</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-question-sign"></i></span><input id="registrationArrival" name="registrationArrival" placeholder="Registration arrival" class="form-control" value="@Model.Registration_arrival" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Insurance</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span><input id="insurance" name="insurance" placeholder="Insurance" class="form-control"  value="@Model.Insurance" type="text"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Techinician ID</label>
+                    <div class="col-md-8 inputGroupContainer">
+                        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span><input id="techinicianID" name="techinicianID" placeholder="Technician ID" class="form-control" value="@Model.Technician_id" type="text"></div>
+                    </div>
+                </div>
+                <button id="submitButton" type="button" class="btn btn-primary">Submit</button>
+            </fieldset>
+        </form>
+    </div>
+</body>
+
+<script type="text/javascript">
+    $('#submitButton').on('click', function (e) {
+        var object = {
+                Name: $("#patientID").val(),
+                Sex: $("#sex").val(),
+                Birth_date: $("#birthDate").val(),
+                Height: $("#height").val(),
+                Procedure_start: $("#procedureStart").val(),
+                Procedure_code: $("#procedureCode").val(),
+                Radiologist_id: $("#radiologyID").val(),
+                Weight: $("#weight").val(),
+                Registration_arrival: $("#registrationArrival").val(),
+                Insurance: $("#Insurance").val(),
+                Technician_id: $("#technicianID").val()
+        };
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddAppointment","Appointment")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(object)
+            });
+    });
+
+    $("#patientID").on('keyup', function (e) {
+        if (e.keyCode === 13) {
+            var url = '@Url.Action("FindPatientsByID", "Appointment", new { id = "_id_" })';
+            url = url.replace("_id_", $("#patientID").val());
+            window.location.href = url;
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("FindPatientsByID","Appointment")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    "id": $("#patientID").val()
+                },
+                success: function (data) {
+                    var result = $('<div />').append(data).find('#formAppointment').html();
+                    $('#formAppointment').html(result);
+                }
+            });
+        }
+    });
+ 
+</script>

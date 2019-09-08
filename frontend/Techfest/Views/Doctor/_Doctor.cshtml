@@ -1,0 +1,32 @@
+﻿<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor</title>
+    <link rel="stylesheet" href="~/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="~/Content/Doctor.css">
+
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+    <script src="~/Scripts/jquery-1.11.1.min.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div id ="elementaryRow" class="row rowBackgroundImage">
+            <div class="col-lg-2 col-md-2 nopadding">
+                <div class="row"><img id="logoMainPage" src="~/Resources/logo.png"></div>
+                <div class="row"><button id="bookApointment" class="btn btn-primary" type="button">Book an appointment</button></div>
+                <div class="row"><button id="motionPatientFlow" class="btn btn-primary" type="button">Monitor patient flow</button></div>
+            </div>
+            <div class="col-lg-10 col-md-9 nopadding"><img src="~/Resources/PatientDoctor.jpg" style="width:100%" class="img-fluid" /></div>
+        </div>
+    </div>
+</body>
+
+<script>
+
+    $("#bookApointment").click(function () {
+        var url = '@Url.Action("Index", "Appointment")';
+        window.location.href = url;
+    });
+
+</script>
