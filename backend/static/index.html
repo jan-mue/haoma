@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Haoma Realtime Waiting Room Measurements</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="Table">
+    <div class="Title">
+        <p>Reference measurements</p>
+    </div>
+    <div class="Heading">
+        <div class="Cell">
+            <p>Acceleration</p>
+        </div>
+        <div class="Cell">
+            <p>Gyromotion</p>
+        </div>
+        <div class="Cell">
+            <p>Temperature</p>
+        </div>
+        <div class="Cell">
+            <p>Humidity</p>
+        </div>
+        <div class="Cell">
+            <p>Volume</p>
+        </div>
+    </div>
+    <div class="Row">
+        <div class="Cell" id="avg_acc">
+            <p></p>
+        </div>
+        <div class="Cell" id="avg_gyro">
+            <p></p>
+        </div>
+        <div class="Cell" id="avg_temp">
+            <p></p>
+        </div>
+        <div class="Cell" id="avg_hum">
+            <p></p>
+        </div>
+        <div class="Cell" id="avg_vol">
+            <p></p>
+        </div>
+    </div>
+    <div class="Row">
+        <div class="Cell" id="stdev_acc">
+            <p></p>
+        </div>
+        <div class="Cell" id="stdev_gyro">
+            <p></p>
+        </div>
+        <div class="Cell" id="stdev_temp">
+            <p></p>
+        </div>
+        <div class="Cell" id="stdev_hum">
+            <p></p>
+        </div>
+        <div class="Cell" id="stdev_vol">
+            <p></p>
+        </div>
+    </div>
+</div>
+
+<div class="Table">
+    <div class="Title">
+        <p>Realtime measurement</p>
+    </div>
+    <div class="Heading">
+        <div class="Cell">
+            <p>Motion</p>
+        </div>
+        <div class="Cell">
+            <p>Acceleration</p>
+        </div>
+        <div class="Cell">
+            <p>Gyromotion</p>
+        </div>
+        <div class="Cell">
+            <p>Temperature</p>
+        </div>
+        <div class="Cell">
+            <p>Humidity</p>
+        </div>
+        <div class="Cell">
+            <p>Volume</p>
+        </div>
+    </div>
+    <div class="Row">
+        <div class="Cell" id="motion">
+            <p></p>
+        </div>
+        <div class="Cell" id="acc">
+            <p></p>
+        </div>
+        <div class="Cell" id="gyro">
+            <p></p>
+        </div>
+        <div class="Cell" id="temp">
+            <p></p>
+        </div>
+        <div class="Cell" id="hum">
+            <p></p>
+        </div>
+        <div class="Cell" id="vol">
+            <p></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    var ref_measurements = {};
+    var realtime_measurements = {};
+    var threshold_acc = 0;
+    var threshold_gyro = 0;
+    var threshold_temp = 0;
+    var threshold_hum = 0;
+    var threshold_vol = 0;
+    $(function() {
+        $.ajax({
+            url: 'http://10.25.13.227:5000/measurement_dist',
+            success: function (result) {
+                if (result.isOk == false) alert(result.message);
+                ref_measurements = JSON.parse(JSON.stringify(eval("(" + result + ")")));
+                console.log(ref_measurements);
+            },
+            async: false
+        });
+
+        $('#avg_acc p').html(ref_measurements.avg_acc);
+        $('#avg_gyro p').html(ref_measurements.avg_gyro);
+        $('#avg_temp p').html(ref_measurements.avg_temp);
+        $('#avg_hum p').html(ref_measurements.avg_hum);
+        $('#avg_vol p').html(ref_measurements.avg_vol);
+
+        $('#stdev_acc p').html('+- ' + ref_measurements.stdev_acc);
+        $('#stdev_gyro p').html('+- ' + ref_measurements.stdev_gyro);
+        $('#stdev_temp p').html('+- ' + ref_measurements.stdev_temp);
+        $('#stdev_hum p').html('+- ' + ref_measurements.stdev_hum);
+        $('#stdev_vol p').html('+- ' + ref_measurements.stdev_vol);
+
+        threshold_acc = ref_measurements.avg_acc + ref_measurements.stdev_acc * 1.5;
+        threshold_gyro = ref_measurements.avg_gyro + ref_measurements.stdev_gyro * 1.5;
+        threshold_temp = ref_measurements.avg_temp + ref_measurements.stdev_temp * 1.5;
+        threshold_hum = ref_measurements.avg_hum + ref_measurements.stdev_hum * 1.5;
+        threshold_vol = ref_measurements.avg_vol + ref_measurements.stdev_vol * 1.5;
+    });
+
+    setInterval(function() {
+        $.ajax({
+            url: 'http://10.25.13.227:5000/measurement',
+            success: function (result) {
+                if (result.isOk == false) alert(result.message);
+                realtime_measurements = JSON.parse(JSON.stringify(eval("(" + result + ")")));
+                console.log(realtime_measurements);
+            },
+            async: false
+        });
+
+        $('#motion p').html(realtime_measurements.motion);
+        $('#acc p').html(realtime_measurements.acceleration);
+        $('#gyro p').html(realtime_measurements.gyromotion);
+        $('#temp p').html(realtime_measurements.temperature);
+        $('#hum p').html(realtime_measurements.humidity);
+        $('#vol p').html(realtime_measurements.volume);
+
+        if(realtime_measurements.motion === 'true') {
+            $('#motion p').css('background-color', 'pink');
+        } else {
+            $('#motion p').css('background-color', 'white');
+        }
+        if(realtime_measurements.acceleration > threshold_acc) {
+            $('#acc p').css('background-color', 'pink');
+        } else {
+            $('#acc p').css('background-color', 'white');
+        }
+        if(realtime_measurements.gyromotion > threshold_gyro) {
+            $('#gyro p').css('background-color', 'pink');
+        } else {
+            $('#gyro p').css('background-color', 'white');
+        }
+        if(realtime_measurements.temperature > threshold_temp) {
+            $('#temp p').css('background-color', 'pink');
+        } else {
+            $('#temp p').css('background-color', 'white');
+        }
+        if(realtime_measurements.humidity > threshold_hum) {
+            $('#hum p').css('background-color', 'pink');
+        } else {
+            $('#hum p').css('background-color', 'white');
+        }
+        if(realtime_measurements.volume > threshold_vol) {
+            $('#vol p').css('background-color', 'pink');
+        } else {
+            $('#vol p').css('background-color', 'white');
+        }
+    }, 1000);
+</script>
+
+<style type="text/css">
+    .Table
+    {
+        display: table;
+    }
+    .Title
+    {
+        display: table-caption;
+        text-align: center;
+        font-weight: bold;
+        font-size: larger;
+    }
+    .Heading
+    {
+        display: table-row;
+        font-weight: bold;
+        text-align: center;
+    }
+    .Row
+    {
+        display: table-row;
+    }
+    .Cell
+    {
+        display: table-cell;
+        border: solid;
+        border-width: thin;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+</style>
+
+</body>
+</html>
