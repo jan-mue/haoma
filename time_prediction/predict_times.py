@@ -1,4 +1,5 @@
 import tensorflow as tf
+tf.enable_v2_behavior()
 
 from tensorflow.keras import layers
 
@@ -11,7 +12,7 @@ train_ds = ds.take(8).shuffle(10).batch(4)
 test_ds = ds.skip(8).batch(2)
 
 model = tf.keras.models.Sequential([
-    layers.BatchNormalization(),
+    layers.BatchNormalization(input_shape=features[0].shape),
     layers.Dense(64, activation="relu"),
     layers.Dropout(0.2),
     layers.Dense(128, activation="relu"),
@@ -49,7 +50,7 @@ def test_step(images, labels):
   test_loss(t_loss)
 
 
-EPOCHS = 200
+EPOCHS = 1400
 
 for epoch in range(EPOCHS):
     for features, values in train_ds:
@@ -70,4 +71,4 @@ for epoch in range(EPOCHS):
 print(model(features))
 
 model.summary()
-model.save('ge_waiting_time_model.h5')
+model.save('ge_procedure_time_model.h5')
